@@ -6,6 +6,10 @@ PORT = 4562
 
 
 class ChatServer(threading.Thread):
+    """Create and instantiate the ChatServer Class
+
+        This does everything, as well as the whack commands
+    """
     def __init__(self, port, host='localhost'):
         super().__init__(daemon=True)
         self.port = PORT
@@ -63,7 +67,7 @@ class ChatServer(threading.Thread):
             return('')
 
     def run_thread(self, id, nick, conn, addr):
-        """changes the nickname and establishes connection"""
+        """Establish a connection as well as provide user feedback"""
         print('{} connected with {}:{}'.format(nick, addr[0], str(addr[1])))
         try:
             while True:
