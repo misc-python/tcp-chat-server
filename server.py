@@ -2,7 +2,7 @@ from client import Client
 import threading
 import socket
 
-PORT = 4556
+PORT = 4559
 
 
 class ChatServer(threading.Thread):
@@ -47,7 +47,7 @@ class ChatServer(threading.Thread):
                 for i in self.client_pool:
                     if i.id == id:
                         i.change_nickname(data[1])
-                        reply = 'Nickname updated to' + data[1]
+                        reply = 'Nickname updated to:' + data[1]
                         return reply
 
         else:
