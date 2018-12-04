@@ -3,8 +3,7 @@ import uuid
 
 
 class Client:
-    """
-    """
+    """Create and instantiate a Client class."""
 
     def __init__(self, conn=None, addr=None):
         self.id = str(uuid.uuid4())
@@ -14,10 +13,11 @@ class Client:
 
     def __str__(self):
         pass
-    
+
     def __repr__(self):
         pass
 
     def change_nickname(self, nick):
+        """Create the change nickname method."""
         self.nick = nick
         return(self)
