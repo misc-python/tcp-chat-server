@@ -2,7 +2,7 @@ from client import Client
 import threading
 import socket
 
-PORT = 4559
+PORT = 4562
 
 
 class ChatServer(threading.Thread):
@@ -49,6 +49,13 @@ class ChatServer(threading.Thread):
                         i.change_nickname(data[1])
                         reply = 'Nickname updated to:' + data[1]
                         return reply
+
+            if data[0] == '/dm':
+                for i in self.client_pool:
+                    data = message.decode().split(maxsplit=2)
+                    if i.nick.rstrip() == data[1]:
+                        i.conn.sendall(data[2].encode())
+                        return(i.nick)
 
         else:
             reply = nick.encode() + b': ' + message
