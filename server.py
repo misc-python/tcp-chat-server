@@ -2,7 +2,7 @@ from client import Client
 import threading
 import socket
 
-PORT = 4547
+PORT = 4556
 
 
 class ChatServer(threading.Thread):
@@ -43,21 +43,29 @@ class ChatServer(threading.Thread):
                 [c.conn.sendall(reply.encode()) for c in self.client_pool if len(self.client_pool)]
                 return('')
 
+            if data[0] == '/nickname':
+                for i in self.client_pool:
+                    if i.id == id:
+                        i.change_nickname(data[1])
+                        reply = 'Nickname updated to' + data[1]
+                        return reply
+
         else:
             reply = nick.encode() + b': ' + message
             [c.conn.sendall(reply) for c in self.client_pool if len(self.client_pool)]
             return('')
 
     def run_thread(self, id, nick, conn, addr):
-        """ changes the nickname and establishes connection"""
+        """changes the nickname and establishes connection"""
         print('{} connected with {}:{}'.format(nick, addr[0], str(addr[1])))
         try:
             while True:
                 data = conn.recv(4096)
-                parsed_nickname = self.parser(id, nick, conn, data)
-                if len(parsed_nickname):
-                    nick = parsed_nickname
-        except (ConnectionResetError, BrokenPipeError, OSError):
+                parsed_nick = self.parser(id, nick, conn, data)
+                if len(parsed_nick):
+                    nick = parsed_nick
+
+        except (OSError):
             conn.close()
 
     def run(self):
