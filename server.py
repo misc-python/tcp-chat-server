@@ -2,7 +2,7 @@ from client import Client
 import threading
 import socket
 
-PORT = 4562
+PORT = 4567
 
 
 class ChatServer(threading.Thread):
@@ -30,31 +30,32 @@ class ChatServer(threading.Thread):
 
     def parser(self, id, nick, conn, message):
         """Parse the message out to look for keywords."""
-        if message.decode().startswith('/'):
+        if message.decode().startswith('@'):
             data = message.decode().split(maxsplit=1)
 
-            if data[0] == '/quit':
+            if data[0] == '@quit':
                 conn.sendall(b'You have left the chat.')
                 reply = nick.encode() + b'has left the channel.\n'
                 [c.conn.sendall(reply) for c in self.client_pool if len(self.client_pool)]
                 self.client_pool = [c for c in self.client_pool if c.id != id]
                 conn.close()
 
-            if data[0] == '/list':
+            if data[0] == '@list':
                 reply = ''
                 for c in self.client_pool:
                     reply += c.nick + ' \n'
                 [c.conn.sendall(reply.encode()) for c in self.client_pool if len(self.client_pool)]
                 return('')
 
-            if data[0] == '/nickname':
+            if data[0] == '@nickname':
                 for i in self.client_pool:
                     if i.id == id:
-                        i.change_nickname(data[1])
+                        i.nick = data[1]
                         reply = 'Nickname updated to:' + data[1]
-                        return reply
+                        [c.conn.sendall(reply.encode()) for c in self.client_pool if len(self.client_pool)]
+                        return
 
-            if data[0] == '/dm':
+            if data[0] == '@dm':
                 for i in self.client_pool:
                     data = message.decode().split(maxsplit=2)
                     if i.nick.rstrip() == data[1]:
@@ -62,9 +63,13 @@ class ChatServer(threading.Thread):
                         return(i.nick)
 
         else:
-            reply = nick.encode() + b': ' + message
-            [c.conn.sendall(reply) for c in self.client_pool if len(self.client_pool)]
-            return('')
+            data = message.decode().split(maxsplit=1)
+            for i in self.client_pool:
+                if i.id == id:
+                    reply = 'Please enter a valid command.\n'
+                    [c.conn.sendall(reply.encode()) for c in self.client_pool if len(self.client_pool)]
+                    # import pdb; pdb.set_trace()
+            return
 
     def run_thread(self, id, nick, conn, addr):
         """Establish a connection as well as provide user feedback"""
@@ -72,9 +77,7 @@ class ChatServer(threading.Thread):
         try:
             while True:
                 data = conn.recv(4096)
-                parsed_nick = self.parser(id, nick, conn, data)
-                if len(parsed_nick):
-                    nick = parsed_nick
+                self.parser(id, nick, conn, data)
 
         except (OSError):
             conn.close()
