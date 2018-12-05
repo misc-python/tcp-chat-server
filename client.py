@@ -17,7 +17,7 @@ class Client:
     def __repr__(self):
         pass
 
-    def change_nickname(self, nick):
-        """Create the change nickname method."""
-        self.nick = nick
-        return(self)
+    # def change_nickname(self, nick):
+    #     """Create the change nickname method."""
+    #     self.nick = nick
+    #     return(self)
