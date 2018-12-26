@@ -1,9 +1,10 @@
 # TCP-Chat-Server
-code 06: TCP-Chat-Server-Start
 
 
 Author: Joyce Liao & Daniel Frey
 Version: 1.0.0
+
+
 
 
 ## OVERVIEW
